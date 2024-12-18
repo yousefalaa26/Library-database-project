@@ -1,54 +1,89 @@
 CREATE DATABASE Library;
 
-CREATE TABLE books(-- THERE ARE TWO FOREIGN KEYS FROM BOOKS AND PUBLISHER
-    Title VARCHAR(100)NOT NULL,
-	Edition VARCHAR(100),
+USE Library;
+
+-- Books Table
+CREATE TABLE books (
+    ISBN INT PRIMARY KEY, -- Primary key
+    Title VARCHAR(100) NOT NULL,
+    Edition VARCHAR(100),
     Year_of_publication DATE,
-	Price INT,
-    ISBN INT PRIMARY KEY 
+    Price INT
 );
-CREATE TABLE Copies(-- THERE ARE FOREIGN KEY FROM BOOKS TABLE
+
+-- Copies Table
+CREATE TABLE Copies (
     Copy_ID INT PRIMARY KEY,
-	Copy_number INT,
-	availabe VARCHAR(10),
-	Borrowing_Period INT,
-	ISBN INT FOREIGN KEY  REFERENCES  books(ISBN)
+    Copy_number INT,
+    available VARCHAR(10),
+    Borrowing_Period INT,
+    ISBN INT,
+    CONSTRAINT FK_Copies_Books FOREIGN KEY (ISBN) REFERENCES books(ISBN)
 );
-CREATE TABLE Borrowere(--THERE ARE TWO FOREIGN KEYS FROM COPY TABLE AND PHONE_BORROWERE TABLE
-    Brr_ID INT PRIMARY KEY ,
-	Brr_Name VARCHAR(100)NOT NULL,
-	Brr_address VARCHAR(100),
+
+-- Borrowere Table
+CREATE TABLE Borrowere (
+    Brr_ID INT PRIMARY KEY,
+    Brr_Name VARCHAR(100) NOT NULL,
+    Brr_address VARCHAR(100)
 );
-CREATE TABLE Category(
-   Cat_ID INT PRIMARY KEY,
-   Cat_Name VARCHAR(100)NOT NULL
+
+-- Category Table
+CREATE TABLE Category (
+    Cat_ID INT PRIMARY KEY,
+    Cat_Name VARCHAR(100) NOT NULL
 );
-CREATE TABLE Author(-- THRERE ARE FOREIGN KEY FROM NAME TABLE
-   Au_ID INT PRIMARY KEY ,
-   First_Name VARCHAR(100),
-   Mid_Name VARCHAR(100),
-   Last_Name VARCHAR(100)
+
+-- Author Table
+CREATE TABLE Author (
+    Au_ID INT PRIMARY KEY,
+    First_Name VARCHAR(100),
+    Mid_Name VARCHAR(100),
+    Last_Name VARCHAR(100)
 );
-CREATE TABLE Publisher(--THERE ARE FOREIGN FROM PHONE PUBLISHER TABLE
-   Pub_ID INT PRIMARY KEY NOT NULL,
-   Pub_Name VARCHAR(100),
-   Pub_Address VARCHAR(100) 
+
+-- Publisher Table
+CREATE TABLE Publisher (
+    Pub_ID INT PRIMARY KEY,
+    Pub_Name VARCHAR(100),
+    Pub_Address VARCHAR(100)
 );
-CREATE TABLE Borrow(-- RELATIONSHIP BETWEEN BORROWERE TABLE AND COPIES
-   borrowing_date DATE,
-   return_date DATE,
-   Borrowere_ID INT FOREIGN KEY  REFERENCES Borrowere(Brr_ID),--FROM BOOK TABLE
-   Copy_ID INT FOREIGN KEY  REFERENCES Copies(Copy_ID)-- FROM COPY TABLE
+
+-- Borrow Table
+CREATE TABLE Borrow (
+    borrowing_date DATE,
+    return_date DATE,
+    Borrowere_ID INT,
+    Copy_ID INT,
+    CONSTRAINT FK_Borrow_Borrowere FOREIGN KEY (Borrowere_ID) REFERENCES Borrowere(Brr_ID),
+    CONSTRAINT FK_Borrow_Copies FOREIGN KEY (Copy_ID) REFERENCES Copies(Copy_ID)
 );
-CREATE TABLE Authorithies(--RELATIONSHIP TABLE BETWEEN AUTHOR AND BOOK
-   Author_ID INT FOREIGN KEY  REFERENCES Author(Au_ID),
-   ISBN INT FOREIGN KEY  REFERENCES books(ISBN)
+
+-- Authorithies Table (Relationship between Author and Book)
+CREATE TABLE Authorithies (
+    Author_ID INT,
+    ISBN INT,
+    CONSTRAINT FK_Authorithies_Author FOREIGN KEY (Author_ID) REFERENCES Author(Au_ID),
+    CONSTRAINT FK_Authorithies_Books FOREIGN KEY (ISBN) REFERENCES books(ISBN)
 );
-CREATE TABLE Phone_Borowere(
-   Brr_Phone VARCHAR(100),
-   Brr_number INT FOREIGN KEY REFERENCES Borrowere(Brr_ID)  
+
+-- Phone_Borrowere Table
+CREATE TABLE Phone_Borowere (
+    Brr_Phone VARCHAR(100),
+    Brr_number INT,
+    CONSTRAINT FK_Phone_Borrowere FOREIGN KEY (Brr_number) REFERENCES Borrowere(Brr_ID)
 );
-CREATE TABLE Phone_Publisher(--FOR TABLE PUBLISHER
-   Pub_ID INT FOREIGN KEY  REFERENCES  Publisher(Pub_ID),
-   Phone_Number  VARCHAR(50)
+
+-- Phone_Publisher Table
+CREATE TABLE Phone_Publisher (
+    Pub_ID INT,
+    Phone_Number VARCHAR(50),
+    CONSTRAINT FK_Phone_Publisher FOREIGN KEY (Pub_ID) REFERENCES Publisher(Pub_ID)
 );
+ALTER TABLE books 
+ADD CONSTRAINT FK_books_Category
+FOREIGN KEY (Cat_ID) REFERENCES Category(Cat_ID)
+
+ALTER TABLE books
+ADD CONSTRAINT FK_books_Publisher
+FOREIGN KEY (Pub_ID) REFERENCES Publisher(Pub_ID)
